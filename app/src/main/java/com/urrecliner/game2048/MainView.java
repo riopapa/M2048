@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -16,7 +15,6 @@ import com.urrecliner.game2048.Model.Tile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 
 /** view*/
@@ -111,7 +109,7 @@ public class MainView extends View {
     public void onDraw(Canvas canvas) {
         //Reset the transparency of the screen
 
-        canvas.drawBitmap(background, 0, 0, paint);//绘制背景
+        canvas.drawBitmap(background, 0, 0, paint);//draw background
 
         drawScoreText(canvas);//draw fractions
 
@@ -307,7 +305,7 @@ public class MainView extends View {
     private void drawNewGameButton(Canvas canvas, boolean lightUp) {
 
         if (lightUp) {
-            /** 标志位不可用*/
+            /** flag bit unavailable */
             drawDrawable(canvas,
                     lightUpRectangle,
                     sXNewGame,
@@ -439,8 +437,8 @@ public class MainView extends View {
     private void drawCells(Canvas canvas) {
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
+        paint.setColor(getResources().getColor(R.color.cell_blank));
         // Outputting the individual cells
-        StringBuilder sb = new StringBuilder();
         for (int yy = 0; yy < game.numSquaresY; yy++) {
             for (int xx = 0; xx < game.numSquaresX; xx++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -453,7 +451,6 @@ public class MainView extends View {
                     //Get and represent the value of the tile
                     int value = currentTile.getValue();
                     int index = log2(value);
-                    sb.append(value).append(", ");  // @ha
                     //Check for any active animations
                     ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
                     boolean animated = false;
@@ -507,66 +504,55 @@ public class MainView extends View {
                         bitmapCell[index].setBounds(sX, sY, eX, eY);
                         bitmapCell[index].draw(canvas);
                     }
+                    if (xx > 0)
+                        checkLeftSame(canvas, xx, yy, value);
+                    if (yy > 0)
+                        checkUpSame(canvas, xx, yy, value);
+                } else {
+                    canvas.drawRoundRect(sX, sY, eX, eY, gridWidth, gridWidth, paint);
                 }
             }
         }
-        // draw possible next value connection RIGHT
-        for (int xx = 0; xx < game.numSquaresX-1; xx++) {
-            for (int yy = 0; yy < game.numSquaresY; yy++) {
-                Tile currentTile = game.grid.getCellContent(xx, yy);
-                if (currentTile != null) {
-                    //Get and represent the value of the tile
-                    int value = currentTile.getValue();
-                    int value2 = 0;
-                    Tile nextTile = game.grid.getCellContent(xx + 1, yy);
-                    if (nextTile != null) {
-                        value2 = nextTile.getValue();
-                        if (value == value2) {
-                            drawConnection(canvas, xx, yy, value, true);
-                        }
-                    }
-                }
-            }   // loop Y
-        } // loop X
-        for (int xx = 0; xx < game.numSquaresX; xx++) {
-            for (int yy = 0; yy < game.numSquaresY-1; yy++) {
-                Tile currentTile = game.grid.getCellContent(xx, yy);
-                if (currentTile != null) {
-                    //Get and represent the value of the tile
-                    int value = currentTile.getValue();
-                    int value2 = 0;
-                    Tile downTile = game.grid.getCellContent(xx, yy+1);
-                    if (downTile != null) {
-                        value2 = downTile.getValue();
-                        if (value == value2) {
-                            drawConnection(canvas, xx, yy, value, false);
-                        }
-                    }
-                }
-            }   // loop Y
-        } // loop X
     }
 
-    private void drawConnection(Canvas canvas, int xx, int yy, int value, boolean right) {
+    private void checkLeftSame(Canvas canvas, int xx, int yy, int value) {
+        Tile nextTile = game.grid.getCellContent(xx-1, yy);
+        if (nextTile != null) {
+            if (value == nextTile.getValue()) {
+                drawConnection(canvas, xx, yy, value, true);
+            }
+        }
+    }
+
+    private void checkUpSame(Canvas canvas, int xx, int yy, int value) {
+        Tile nextTile = game.grid.getCellContent(xx, yy-1);
+        if (nextTile != null) {
+            if (value == nextTile.getValue()) {
+                drawConnection(canvas, xx, yy, value, false);
+            }
+        }
+    }
+
+    private void drawConnection(Canvas canvas, int xx, int yy, int value, boolean left) {
         int sX, eX, sY, eY;
 
-        if (right) {
-            sX = startingX + gridWidth + (cellSize + gridWidth) * xx + cellSize * 8/9;
+        if (left) {
+            sX = startingX + gridWidth + (cellSize + gridWidth) * xx + cellSize * 1/9;
             sY = startingY + gridWidth + (cellSize + gridWidth) * yy + cellSize / 2;
-            eX = sX + gridWidth + cellSize * 2/9;
+            eX = sX - gridWidth - cellSize * 2/9;
             eY = sY;
         } else {
             sX = startingX + gridWidth + (cellSize + gridWidth) * xx + cellSize / 2;
-            sY = startingY + gridWidth + (cellSize + gridWidth) * yy + cellSize * 8/9;
+            sY = startingY + gridWidth + (cellSize + gridWidth) * yy + cellSize * 1/9;
             eX  = sX;
-            eY = sY + gridWidth + cellSize * 2/9;
+            eY = sY - gridWidth - cellSize * 2/9;
         }
         int index = log2(value) * 4;
         Paint paint = new Paint();
         paint.setColor(getResources().getColor(R.color.purple_500));
         paint.setStrokeWidth(2f);
         while (index >= 0) {
-            if (right) {
+            if (left) {
                 canvas.drawLine(sX, sY + index, eX, eY + index, paint);
                 canvas.drawLine(sX, sY - index, eX, eY - index, paint);
             } else {
@@ -574,7 +560,6 @@ public class MainView extends View {
                 canvas.drawLine(sX + index, sY, eX + index, eY, paint);
             }
             index -= 4;
-
         }
     }
 
