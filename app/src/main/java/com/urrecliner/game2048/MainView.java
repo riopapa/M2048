@@ -52,6 +52,7 @@ public class MainView extends View {
     private float titleTextSize;//title font size
     private float bodyTextSize;//Score column size
     private float headerTextSize;//title font size
+    private float timeTextSize; // now Time size;
     private float instructionsTextSize;//Game description font size
     private float gameOverTextSize;//game over font
     private int cellSize = 0;//方块大小
@@ -77,6 +78,11 @@ public class MainView extends View {
     private int bodyStartYAll;
     private int titleWidthHighScore;
     private int titleWidthScore;
+    int textMiddleHighScore;
+    int textMiddleScore;
+
+    int sXHighScore, eXHighScore;
+    int sXScore, eXScore;
 
     public MainView(Context context) {
         super(context);
@@ -188,9 +194,9 @@ public class MainView extends View {
         Resources resources = getResources();
         int[] cellRectangleIds = getCellRectangleIds();
         paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(cellTextSize);
         for (int xx = 1; xx < bitmapCell.length; xx++) {
             int value = (int) Math.pow(2, xx);
-            paint.setTextSize(cellTextSize);
             float tempTextSize = cellTextSize * cellSize * 0.9f / Math.max(cellSize * 0.9f, paint.measureText(String.valueOf(value)));
             paint.setTextSize(tempTextSize);
             Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
@@ -252,25 +258,7 @@ public class MainView extends View {
 
     /** draw fractions */
     private void drawScoreText(Canvas canvas) {
-        //Drawing the score text: Ver 2
-        Log.w("drawScoreText"," time");
-        paint.setTextSize(bodyTextSize);
         paint.setTextAlign(Paint.Align.CENTER);
-
-        int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-
-        /**adaptation */
-        int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
-        int textWidthScore = textWidthHighScore;
-
-        int textMiddleHighScore = textWidthHighScore / 2;
-        int textMiddleScore = textWidthScore / 2;
-
-        int eXHighScore = endingX;
-        int sXHighScore = eXHighScore - textWidthHighScore;
-
-        int eXScore = sXHighScore - textPaddingSize;
-        int sXScore = eXScore - textWidthHighScore;
 
         //Outputting high-scores box
         backgroundRectangle.setBounds(sXHighScore, sYScoreBox, eXHighScore, eYScoreBox);
@@ -294,10 +282,10 @@ public class MainView extends View {
     void showNowTime(Canvas canvas) {
         SimpleDateFormat timeStamp = new SimpleDateFormat("HH:mm", Locale.KOREA);
         String nowTime = timeStamp.format(System.currentTimeMillis());
-        paint.setTextSize(bodyTextSize+bodyTextSize/2);
+        paint.setTextSize(timeTextSize);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(getResources().getColor(R.color.text_brown));
-        canvas.drawText(nowTime, sYScoreBox, titleStartYAll-160, paint);
+        canvas.drawText(nowTime, eXScore, titleStartYAll-160, paint);
     }
     /** Draw new game button */
     private void drawNewGameButton(Canvas canvas, boolean lightUp) {
@@ -646,6 +634,7 @@ public class MainView extends View {
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
         headerTextSize = textSize * 2;
+        timeTextSize = (int) (bodyTextSize+bodyTextSize/3);
 
         //Fractional area size
         textPaddingSize = (int) (textSize / 3);
@@ -662,6 +651,20 @@ public class MainView extends View {
         sYMoveCount = sYTitle + textHeight + textPaddingSize;
         sYScore = sYMoveCount + textHeight + textPaddingSize;
         eYScoreBox = sYScore + (int) (textPaddingSize);
+
+        paint.setTextSize(bodyTextSize);
+//        paint.setTextAlign(Paint.Align.CENTER);
+
+        int bodyWidthHighScore = (int) (paint.measureText("000000"));
+        int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
+
+        textMiddleHighScore = textWidthHighScore / 2;
+        textMiddleScore = textWidthHighScore / 2;
+        eXHighScore = endingX;
+        sXHighScore = eXHighScore - textWidthHighScore;
+
+        eXScore = sXHighScore - textPaddingSize;
+        sXScore = eXScore - textWidthHighScore;
 
         titleStartYAll = (int) (sYScoreBox + textPaddingSize + titleTextSize / 2 - textShiftYAll); //Fractional area y-axis
         bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + bodyTextSize / 2);//Fractional y-axis
