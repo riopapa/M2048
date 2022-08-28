@@ -68,11 +68,13 @@ public class MainView extends View {
     private BitmapDrawable loseGameOverlay;
     private BitmapDrawable winGameContinueOverlay;
     private BitmapDrawable winGameFinalOverlay;
-    //Text variables
-    private int sYAll;
+    //Score Text variables
+
+    private int sXScoreBox;
+    private int sYScoreBox, eYScoreBox;
+    private int sYTitle, sYMoveCount, sYScore;
     private int titleStartYAll;
     private int bodyStartYAll;
-    private int eYAll;
     private int titleWidthHighScore;
     private int titleWidthScore;
 
@@ -112,7 +114,6 @@ public class MainView extends View {
         canvas.drawBitmap(background, 0, 0, paint);//draw background
 
         drawScoreText(canvas);//draw fractions
-
         if (!game.isActive() && !game.aGrid.isAnimationActive()) {
             drawNewGameButton(canvas, true);
         }
@@ -134,7 +135,7 @@ public class MainView extends View {
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
             tick();
-            //Refresh one last time on game end.
+//            Refresh one last time on game end.
         } else if (!game.isActive() && refreshLastTime) {
             invalidate();
             refreshLastTime = false;
@@ -252,15 +253,15 @@ public class MainView extends View {
     /** draw fractions */
     private void drawScoreText(Canvas canvas) {
         //Drawing the score text: Ver 2
+        Log.w("drawScoreText"," time");
         paint.setTextSize(bodyTextSize);
         paint.setTextAlign(Paint.Align.CENTER);
 
         int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-        int bodyWidthScore = (int) (paint.measureText("" + game.score));
 
         /**adaptation */
         int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
-        int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
+        int textWidthScore = textWidthHighScore;
 
         int textMiddleHighScore = textWidthHighScore / 2;
         int textMiddleScore = textWidthScore / 2;
@@ -269,38 +270,35 @@ public class MainView extends View {
         int sXHighScore = eXHighScore - textWidthHighScore;
 
         int eXScore = sXHighScore - textPaddingSize;
-        int sXScore = eXScore - textWidthScore;
+        int sXScore = eXScore - textWidthHighScore;
 
         //Outputting high-scores box
-        backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
+        backgroundRectangle.setBounds(sXHighScore, sYScoreBox, eXHighScore, eYScoreBox);
         backgroundRectangle.draw(canvas);
+        backgroundRectangle.setBounds(sXScore, sYScoreBox, eXScore, eYScoreBox);
+        backgroundRectangle.draw(canvas);
+
         paint.setTextSize(titleTextSize);
         paint.setColor(getResources().getColor(R.color.text_brown));
-        canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, titleStartYAll, paint);
+        canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, sYTitle, paint);
+        canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, sYTitle, paint);
         paint.setTextSize(bodyTextSize);
         paint.setColor(getResources().getColor(R.color.text_white));
-        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
+        canvas.drawText(String.valueOf(game.highMoveCount), sXHighScore + textMiddleScore, sYMoveCount, paint);
+        canvas.drawText(String.valueOf(game.moveCount), sXScore + textMiddleScore, sYMoveCount, paint);
+        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, sYScore, paint);
+        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, sYScore, paint);
+        showNowTime(canvas);
+    }
 
-
-        //Outputting scores box
-        backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
-        backgroundRectangle.draw(canvas);
-        paint.setTextSize(titleTextSize);
-        paint.setColor(getResources().getColor(R.color.text_brown));
-        canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, titleStartYAll, paint);
-        paint.setTextSize(bodyTextSize);
-        paint.setColor(getResources().getColor(R.color.text_white));
-        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
-
+    void showNowTime(Canvas canvas) {
         SimpleDateFormat timeStamp = new SimpleDateFormat("HH:mm", Locale.KOREA);
         String nowTime = timeStamp.format(System.currentTimeMillis());
         paint.setTextSize(bodyTextSize+bodyTextSize/2);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setColor(getResources().getColor(R.color.text_brown));
-        canvas.drawText(nowTime, sXHighScore+20, titleStartYAll-100, paint);
-
+        canvas.drawText(nowTime, sYScoreBox, titleStartYAll-160, paint);
     }
-
     /** Draw new game button */
     private void drawNewGameButton(Canvas canvas, boolean lightUp) {
 
@@ -386,7 +384,7 @@ public class MainView extends View {
         paint.setColor(getResources().getColor(R.color.text_black));
         paint.setTextAlign(Paint.Align.LEFT);
         int textShiftY = centerText() * 2;
-        int headerStartY = sYAll - textShiftY;
+        int headerStartY = sYScoreBox - textShiftY;
         canvas.drawText(getResources().getString(R.string.header), startingX, headerStartY, paint);
     }
 
@@ -547,7 +545,7 @@ public class MainView extends View {
             eX  = sX;
             eY = sY - gridWidth - cellSize * 2/9;
         }
-        int index = log2(value) * 4;
+        int index = log2(value) * 5;
         Paint paint = new Paint();
         paint.setColor(getResources().getColor(R.color.purple_500));
         paint.setStrokeWidth(2f);
@@ -559,7 +557,7 @@ public class MainView extends View {
                 canvas.drawLine(sX - index, sY, eX - index, eY, paint);
                 canvas.drawLine(sX + index, sY, eX + index, eY, paint);
             }
-            index -= 4;
+            index -= 5;
         }
     }
 
@@ -601,7 +599,7 @@ public class MainView extends View {
     private void getLayout(int width, int height) {
         //格子大小
         cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
-        //分割线宽度，从多出来的格子划分为7条分割线
+        //The width of the dividing line, divided into 7 dividing lines from the extra grid
         gridWidth = cellSize / 7;
         //中心坐标
         int screenMiddleX = width / 2;
@@ -626,14 +624,14 @@ public class MainView extends View {
         paint.setTextSize(cellSize);
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));//字符串宽度
 
-        // 游戏说明字体大小
+        // Game description font size
         paint.setTextAlign(Paint.Align.CENTER);
         //paint.setTextSize(1000);
         instructionsTextSize = Math.min(
                 1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructionsone)))),
                 textSize / 2.5f
         );
-        // 游戏结束字体大小屏幕适配
+        // Game over font size screen adaptation
         gameOverTextSize = Math.min(
                 Math.min(
                         1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.game_over)))),
@@ -649,27 +647,29 @@ public class MainView extends View {
         bodyTextSize = (int) (textSize / 1.5);
         headerTextSize = textSize * 2;
 
-        //分数区域大小
+        //Fractional area size
         textPaddingSize = (int) (textSize / 3);
-        //按钮区域大小
+        //button area size
         iconPaddingSize = (int) (textSize/5);
 
         paint.setTextSize(titleTextSize);
 
         int textShiftYAll = centerText();
+        int textHeight = (int) titleTextSize;
         //static variables
-        sYAll = (int) (startingY - cellSize * 1.5);//title y axis
-        titleStartYAll = (int) (sYAll + textPaddingSize + titleTextSize / 2 - textShiftYAll);//Fractional area y-axis
-        bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + bodyTextSize / 2);//Fractional y-axis
+        sYScoreBox = (int) (startingY - cellSize * 2);
+        sYTitle = sYScoreBox + textHeight + textPaddingSize / 2;
+        sYMoveCount = sYTitle + textHeight + textPaddingSize;
+        sYScore = sYMoveCount + textHeight + textPaddingSize;
+        eYScoreBox = sYScore + (int) (textPaddingSize);
 
+        titleStartYAll = (int) (sYScoreBox + textPaddingSize + titleTextSize / 2 - textShiftYAll); //Fractional area y-axis
+        bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + bodyTextSize / 2);//Fractional y-axis
         titleWidthHighScore = (int) (paint.measureText(getResources().getString(R.string.high_score)));//high score
         titleWidthScore = (int) (paint.measureText(getResources().getString(R.string.score)));//score
         paint.setTextSize(bodyTextSize);
-        textShiftYAll = centerText();
 
-        eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
-
-        sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
+        sYIcons = (startingY + eYScoreBox) / 2 - iconSize / 2;
         sXNewGame = (endingX - iconSize);
         sXUndo = sXNewGame - iconSize * 3 / 2 - iconPaddingSize;
         sXAI=sXUndo-iconSize*3/2-iconPaddingSize;

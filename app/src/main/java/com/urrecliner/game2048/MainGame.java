@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** 游戏服务类*/
+/** game service */
 public class MainGame {
 
     public static final int SPAWN_ANIMATION = -1;
@@ -39,6 +39,7 @@ public class MainGame {
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
     private static final String HIGH_SCORE = "high score";
+    private static final String HIGH_MOVE = "high move";
     private static int endingMaxValue;
     final int numSquaresX = 5;
     final int numSquaresY = 5;  // @ha
@@ -48,10 +49,14 @@ public class MainGame {
     public AnimationGrid aGrid;
     public boolean canUndo;
     public long score = 0;
+    public int moveCount = 0;
     public long highScore = 0;
+    public int highMoveCount = 0;
     public long lastScore = 0;
     private long bufferScore = 0;
 
+    SharedPreferences settings;
+    SharedPreferences.Editor editor;
 
     public AlphaBeta gameAI;
     public MainGame(Context context, MainView view) {
@@ -71,15 +76,20 @@ public class MainGame {
         }
 
         aGrid = new AnimationGrid(numSquaresX, numSquaresY);
-        highScore = getHighScore();
+        settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        editor = settings.edit();
+        getHighScore();
         if (score >= highScore) {
             highScore = score;
+            highMoveCount = moveCount;
             recordHighScore();
         }
+        moveCount = 0;
         score = 0;
         gameState = GAME_NORMAL;
         addStartTiles();
         mView.refreshLastTime = true;
+//        mView.showNowTime();
         mView.resyncTime();
         mView.invalidate();
     }
@@ -106,15 +116,14 @@ public class MainGame {
     }
 
     private void recordHighScore() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(HIGH_MOVE, highMoveCount);
         editor.putLong(HIGH_SCORE, highScore);
         editor.commit();
     }
 
-    private long getHighScore() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return settings.getLong(HIGH_SCORE, -1);
+    private void getHighScore() {
+        highMoveCount = settings.getInt(HIGH_MOVE, 1);
+        highScore = settings.getLong(HIGH_SCORE, -1);
     }
 
     private void prepareTiles() {
@@ -166,7 +175,7 @@ public class MainGame {
         return (gameState == GAME_LOST);
     }
 
-    /**游戏正在运行*/
+    /**game is running */
     public boolean isActive() {
         return !(gameWon() || gameLost());
     }
@@ -181,7 +190,6 @@ public class MainGame {
         List<Integer> traversalsX = buildTraversalsX(vector);
         List<Integer> traversalsY = buildTraversalsY(vector);
         boolean moved = false;
-
         prepareTiles();
 
         for (int xx : traversalsX) {
@@ -212,7 +220,7 @@ public class MainGame {
 
                         // Update the score
                         score = score + merged.getValue();
-                        highScore = Math.max(score, highScore);
+//                        highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
                         if (merged.getValue() >= winValue() && !gameWon()) {
@@ -252,6 +260,7 @@ public class MainGame {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
+            highMoveCount = moveCount;
             recordHighScore();
         }
     }

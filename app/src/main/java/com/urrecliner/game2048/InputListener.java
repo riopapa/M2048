@@ -2,6 +2,7 @@ package com.urrecliner.game2048;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -123,9 +124,14 @@ class InputListener implements View.OnTouchListener {
                 previousDirection = 1;
                 veryLastDirection = 1;
                 //"Menu" inputs
+                mView.game.moveCount++;
+                if (mView.game.score >= mView.game.highScore) {
+                    mView.game.highScore = mView.game.score;
+                    mView.game.highMoveCount = mView.game.moveCount;
+                }
                 if (!hasMoved) {
-                    //按下按钮
-                    //游戏没有结束并且AI没有开启
+                    //Push the button
+                    //The game is not over and the AI is not turned on
                     if(iconPressed(mView.sXAI,mView.sYIcons)) {
                         if (!mView.game.gameLost()) {
                             Observable.create(new Observable.OnSubscribe<Object>() {
