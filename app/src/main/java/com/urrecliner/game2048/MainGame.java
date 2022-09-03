@@ -41,8 +41,8 @@ public class MainGame {
     private static final String HIGH_SCORE = "high score";
     private static final String HIGH_MOVE = "high move";
     private static int endingMaxValue;
-    final int numSquaresX = 5;
-    final int numSquaresY = 5;  // @ha
+    final int numSquaresX = 4;
+    final int numSquaresY = 4;  // @ha
     private final Context mContext;
     private final MainView mView;
     public Grid grid = null;

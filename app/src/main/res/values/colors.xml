@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="cell_blank">#FFDDDDDD</color>
+    <color name="yellow">#FFFFFF00</color>
 
 
     <color name="text_white">#ffffff</color>

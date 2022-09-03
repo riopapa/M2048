@@ -2,9 +2,6 @@ package com.urrecliner.game2048;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-//import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +14,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String HEIGHT = "height";
     private static final String SCORE = "score";
     private static final String HIGH_SCORE = "high score temp";
+    private static final String MOVE = "move";
+    private static final String HIGH_MOVE = "high move";
     private static final String UNDO_SCORE = "undo score";
     private static final String CAN_UNDO = "can undo";
     private static final String UNDO_GRID = "undo";
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         view = new MainView(this);
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
         view.hasSaveState = settings.getBoolean("save_state", false);
 
         if (savedInstanceState != null) {
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void save() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         Tile[][] field = view.game.grid.field;
         Tile[][] undoField = view.game.grid.undoField;
@@ -100,9 +99,11 @@ public class MainActivity extends AppCompatActivity {
         editor.putLong(HIGH_SCORE, view.game.highScore);
         editor.putLong(UNDO_SCORE, view.game.lastScore);
         editor.putBoolean(CAN_UNDO, view.game.canUndo);
+        editor.putInt(MOVE, view.game.moveCount);
+        editor.putInt(HIGH_MOVE, view.game.highMoveCount);
         editor.putInt(GAME_STATE, view.game.gameState);
         editor.putInt(UNDO_GAME_STATE, view.game.lastGameState);
-        editor.commit();
+        editor.apply();
     }
 
     protected void onResume() {
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         //Stopping all animations
         view.game.aGrid.cancelAnimations();
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
         for (int xx = 0; xx < view.game.grid.field.length; xx++) {
             for (int yy = 0; yy < view.game.grid.field[0].length; yy++) {
                 int value = settings.getInt(xx + " " + yy, -1);
@@ -135,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
         view.game.score = settings.getLong(SCORE, view.game.score);
         view.game.highScore = settings.getLong(HIGH_SCORE, view.game.highScore);
+        view.game.moveCount = settings.getInt(MOVE, view.game.moveCount);
+        view.game.highMoveCount = settings.getInt(HIGH_MOVE, view.game.highMoveCount);
         view.game.lastScore = settings.getLong(UNDO_SCORE, view.game.lastScore);
         view.game.canUndo = settings.getBoolean(CAN_UNDO, view.game.canUndo);
         view.game.gameState = settings.getInt(GAME_STATE, view.game.gameState);
