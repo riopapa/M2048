@@ -1,8 +1,12 @@
 package com.urrecliner.game2048;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,22 +25,33 @@ public class MainActivity extends AppCompatActivity {
     private static final String UNDO_GRID = "undo";
     private static final String GAME_STATE = "game state";
     private static final String UNDO_GAME_STATE = "undo game state";
-    private MainView view;
+    private MainView mainView;
+    public static Activity mActivity;
+    public static TextView tvHiScore, tvScore, tvMove, tvHiMove, tvTime, tvElapsed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        view = new MainView(this);
+        mActivity = this;
+        setContentView(R.layout.activity_main);
+        tvHiScore = findViewById(R.id.highScore);
+        tvScore = findViewById(R.id.score);
+        tvHiMove = findViewById(R.id.highMoves);
+        tvMove = findViewById(R.id.moves);
+        tvTime = findViewById(R.id.nowTime);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View theView = inflater.inflate(R.layout.layout_puzzle, null);
+        mainView = theView.findViewById(R.id.puzzle_4box);
 
         SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
-        view.hasSaveState = settings.getBoolean("save_state", false);
+        mainView.hasSaveState = settings.getBoolean("save_state", false);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean("hasState")) {
                 load();
             }
         }
-        setContentView(view);
     }
 
     @Override
@@ -46,16 +61,16 @@ public class MainActivity extends AppCompatActivity {
             //Do nothing
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-            view.game.move(2);
+            mainView.game.move(2);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-            view.game.move(0);
+            mainView.game.move(0);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            view.game.move(3);
+            mainView.game.move(3);
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            view.game.move(1);
+            mainView.game.move(1);
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -76,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private void save() {
         SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
-        Tile[][] field = view.game.grid.field;
-        Tile[][] undoField = view.game.grid.undoField;
+        Tile[][] field = mainView.game.grid.field;
+        Tile[][] undoField = mainView.game.grid.undoField;
         editor.putInt(WIDTH, field.length);
         editor.putInt(HEIGHT, field.length);
         for (int xx = 0; xx < field.length; xx++) {
@@ -95,14 +110,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        editor.putLong(SCORE, view.game.score);
-        editor.putLong(HIGH_SCORE, view.game.highScore);
-        editor.putLong(UNDO_SCORE, view.game.lastScore);
-        editor.putBoolean(CAN_UNDO, view.game.canUndo);
-        editor.putInt(MOVE, view.game.moveCount);
-        editor.putInt(HIGH_MOVE, view.game.highMoveCount);
-        editor.putInt(GAME_STATE, view.game.gameState);
-        editor.putInt(UNDO_GAME_STATE, view.game.lastGameState);
+        editor.putLong(SCORE, mainView.game.score);
+        editor.putLong(HIGH_SCORE, mainView.game.highScore);
+        editor.putLong(UNDO_SCORE, mainView.game.lastScore);
+        editor.putBoolean(CAN_UNDO, mainView.game.canUndo);
+        editor.putInt(MOVE, mainView.game.moves);
+        editor.putInt(HIGH_MOVE, mainView.game.highMoves);
+        editor.putInt(GAME_STATE, mainView.game.gameState);
+        editor.putInt(UNDO_GAME_STATE, mainView.game.lastGameState);
         editor.apply();
     }
 
@@ -113,34 +128,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void load() {
         //Stopping all animations
-        view.game.aGrid.cancelAnimations();
+        mainView.game.aGrid.cancelAnimations();
 
         SharedPreferences settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(this);
-        for (int xx = 0; xx < view.game.grid.field.length; xx++) {
-            for (int yy = 0; yy < view.game.grid.field[0].length; yy++) {
+        for (int xx = 0; xx < mainView.game.grid.field.length; xx++) {
+            for (int yy = 0; yy < mainView.game.grid.field[0].length; yy++) {
                 int value = settings.getInt(xx + " " + yy, -1);
                 if (value > 0) {
-                    view.game.grid.field[xx][yy] = new Tile(xx, yy, value);
+                    mainView.game.grid.field[xx][yy] = new Tile(xx, yy, value);
                 } else if (value == 0) {
-                    view.game.grid.field[xx][yy] = null;
+                    mainView.game.grid.field[xx][yy] = null;
                 }
 
                 int undoValue = settings.getInt(UNDO_GRID + xx + " " + yy, -1);
                 if (undoValue > 0) {
-                    view.game.grid.undoField[xx][yy] = new Tile(xx, yy, undoValue);
+                    mainView.game.grid.undoField[xx][yy] = new Tile(xx, yy, undoValue);
                 } else if (value == 0) {
-                    view.game.grid.undoField[xx][yy] = null;
+                    mainView.game.grid.undoField[xx][yy] = null;
                 }
             }
         }
 
-        view.game.score = settings.getLong(SCORE, view.game.score);
-        view.game.highScore = settings.getLong(HIGH_SCORE, view.game.highScore);
-        view.game.moveCount = settings.getInt(MOVE, view.game.moveCount);
-        view.game.highMoveCount = settings.getInt(HIGH_MOVE, view.game.highMoveCount);
-        view.game.lastScore = settings.getLong(UNDO_SCORE, view.game.lastScore);
-        view.game.canUndo = settings.getBoolean(CAN_UNDO, view.game.canUndo);
-        view.game.gameState = settings.getInt(GAME_STATE, view.game.gameState);
-        view.game.lastGameState = settings.getInt(UNDO_GAME_STATE, view.game.lastGameState);
+        mainView.game.score = settings.getLong(SCORE, mainView.game.score);
+        mainView.game.highScore = settings.getLong(HIGH_SCORE, mainView.game.highScore);
+        mainView.game.moves = settings.getInt(MOVE, mainView.game.moves);
+        mainView.game.highMoves = settings.getInt(HIGH_MOVE, mainView.game.highMoves);
+        mainView.game.lastScore = settings.getLong(UNDO_SCORE, mainView.game.lastScore);
+        mainView.game.canUndo = settings.getBoolean(CAN_UNDO, mainView.game.canUndo);
+        mainView.game.gameState = settings.getInt(GAME_STATE, mainView.game.gameState);
+        mainView.game.lastGameState = settings.getInt(UNDO_GAME_STATE, mainView.game.lastGameState);
     }
 }

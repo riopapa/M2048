@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">M2048</string>
+    <string name="app_name" translatable="false">My2048</string>
     <string name="header" translatable="false">2048</string>
     <string name="high_score">HIGH SCORE</string>
     <string name="score">SCORE</string>

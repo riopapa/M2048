@@ -2,7 +2,6 @@ package com.urrecliner.game2048;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -124,10 +123,10 @@ class InputListener implements View.OnTouchListener {
                 previousDirection = 1;
                 veryLastDirection = 1;
                 //"Menu" inputs
-                mView.game.moveCount++;
+                mView.game.moves++;
                 if (mView.game.score >= mView.game.highScore) {
                     mView.game.highScore = mView.game.score;
-                    mView.game.highMoveCount = mView.game.moveCount;
+                    mView.game.highMoves = mView.game.moves;
                 }
                 if (!hasMoved) {
                     //Push the button

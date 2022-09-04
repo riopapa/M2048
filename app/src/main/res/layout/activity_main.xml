@@ -1,99 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffe4c4">
 
-    <TextView
-        android:id="@+id/nowTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:text="HH:MM"
-        android:textSize="24dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/elapsedText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Elapsed"
-        android:textSize="16dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toStartOf="@id/elapsed"
-        app:layout_constraintStart_toEndOf="@id/nowTime"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/elapsed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:text="0"
-        android:textSize="16dp"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/elapsedText"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:text="2048"
-        android:textSize="40dp"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nowTime" />
-
     <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/fade_rectangle"
+        android:id="@+id/timeInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/textView">
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/puzzle_box"
+        app:layout_constraintEnd_toStartOf="@id/highInfo"
+        >
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/text2048"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="score"
-            android:textAlignment="center"
-            android:textSize="20dp" />
-
+            android:text="2048"
+            android:textSize="40dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/nowTime"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00"
-            android:textAlignment="center"
-            android:textSize="20dp" />
+            android:text="HH:MM"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="0dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="43dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout1"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        android:id="@+id/highInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/timeInfo"
+        app:layout_constraintBottom_toBottomOf="@id/timeInfo"
+        app:layout_constraintStart_toEndOf="@id/timeInfo"
+        app:layout_constraintEnd_toStartOf="@id/scoreInfo"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hi Score"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/highMoves" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/highScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1234"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/scoreInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/timeInfo"
+        app:layout_constraintBottom_toBottomOf="@id/timeInfo"
+        app:layout_constraintStart_toEndOf="@id/highInfo"
+        app:layout_constraintEnd_toStartOf="@id/icons"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/moves" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1234"
+            android:textSize="24dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/icons"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/timeInfo"
+        app:layout_constraintBottom_toBottomOf="@id/timeInfo"
+        app:layout_constraintStart_toEndOf="@id/scoreInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <ImageView
+            android:id="@+id/ai"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_ai"
+            android:layout_gravity="center"
+            />
+        <ImageView
+            android:id="@+id/new_game"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_new_game"
+            android:layout_gravity="center"
+            />
+        <ImageView
+            android:id="@+id/un_do"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_undo"
+            android:layout_gravity="center"
+            />
+
+    </LinearLayout>
+
+    <com.urrecliner.game2048.MainView
+        android:id="@+id/puzzle_box"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeInfo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="ReDesigned by\n Woncherl Ha"
+        android:textColor="@color/black"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/puzzle_box"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

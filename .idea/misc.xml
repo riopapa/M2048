@@ -21,7 +21,12 @@
         <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable-mdpi/cell_rectangle_256.xml" value="0.187" />
         <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable-mdpi/cell_rectangle_4096.xml" value="0.187" />
         <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable-mdpi/cell_rectangle_512.xml" value="0.187" />
-        <entry key="..\:/@ANDROID/M2048/app/src/main/res/layout/activity_main.xml" value="0.1431159420289855" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable-mdpi/light_up_rectangle.xml" value="0.187" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable/icon_ai.xml" value="0.187" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable/icon_new_game.xml" value="0.187" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/drawable/icon_undo.xml" value="0.187" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/@ANDROID/M2048/app/src/main/res/layout/layout_puzzle.xml" value="0.14945652173913043" />
         <entry key="..\:/Rohit git frist page/2048-Boate-main/2048-Boate-main/app/src/main/res/layout/activity_main.xml" value="0.1953125" />
       </map>
     </option>

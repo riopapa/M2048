@@ -2,7 +2,7 @@ package com.urrecliner.game2048;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 import com.urrecliner.game2048.AI.AlphaBeta;
 import com.urrecliner.game2048.Animation.AnimationGrid;
@@ -10,9 +10,11 @@ import com.urrecliner.game2048.Model.Cell;
 import com.urrecliner.game2048.Model.Grid;
 import com.urrecliner.game2048.Model.Tile;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /** game service */
 public class MainGame {
@@ -42,16 +44,17 @@ public class MainGame {
     private static final String HIGH_MOVE = "high move";
     private static int endingMaxValue;
     final int numSquaresX = 4;
-    final int numSquaresY = 5;  // @ha
+    final int numSquaresY = 4;  // @ha
     private final Context mContext;
     private final MainView mView;
     public Grid grid = null;
     public AnimationGrid aGrid;
     public boolean canUndo;
+
     public long score = 0;
-    public int moveCount = 0;
+    public int moves = 0;
     public long highScore = 0;
-    public int highMoveCount = 0;
+    public int highMoves = 0;
     public long lastScore = 0;
     private long bufferScore = 0;
 
@@ -81,19 +84,32 @@ public class MainGame {
         getHighScore();
         if (score >= highScore) {
             highScore = score;
-            highMoveCount = moveCount;
+            highMoves = moves;
             recordHighScore();
         }
-        moveCount = 0;
+        moves = 0;
         score = 0;
         gameState = GAME_NORMAL;
         addStartTiles();
         mView.refreshLastTime = true;
-//        mView.showNowTime();
         mView.resyncTime();
         mView.invalidate();
+        showStatics();
     }
 
+    void showStatics() {
+        TextView tvHiScore = MainActivity.mActivity.findViewById(R.id.highScore);
+        if (tvHiScore != null) {
+            MainActivity.tvHiMove.setText(""+ highMoves);
+            MainActivity.tvMove.setText(""+ moves);
+            MainActivity.tvHiScore.setText(""+highScore);
+            MainActivity.tvScore.setText(""+score);
+
+            SimpleDateFormat timeStamp = new SimpleDateFormat("HH:mm", Locale.KOREA);
+            MainActivity.tvTime.setText(timeStamp.format(System.currentTimeMillis()));
+        }
+
+    }
     private void addStartTiles() {
         int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
@@ -116,13 +132,14 @@ public class MainGame {
     }
 
     private void recordHighScore() {
-        editor.putInt(HIGH_MOVE, highMoveCount);
+        editor.putInt(HIGH_MOVE, highMoves);
         editor.putLong(HIGH_SCORE, highScore);
         editor.commit();
+        showStatics();
     }
 
     private void getHighScore() {
-        highMoveCount = settings.getInt(HIGH_MOVE, 1);
+        highMoves = settings.getInt(HIGH_MOVE, 1);
         highScore = settings.getLong(HIGH_SCORE, -1);
     }
 
@@ -220,7 +237,10 @@ public class MainGame {
 
                         // Update the score
                         score = score + merged.getValue();
-//                        highScore = Math.max(score, highScore);
+                        if (score >= highScore) {
+                            highScore = score;
+                            highMoves = moves;
+                        }
 
                         // The mighty 2048 tile
                         if (merged.getValue() >= winValue() && !gameWon()) {
@@ -247,6 +267,7 @@ public class MainGame {
         }
         mView.resyncTime();
         mView.invalidate();
+        showStatics();
     }
 
     private void checkLose() {
@@ -260,7 +281,7 @@ public class MainGame {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
-            highMoveCount = moveCount;
+            highMoves = moves;
             recordHighScore();
         }
     }

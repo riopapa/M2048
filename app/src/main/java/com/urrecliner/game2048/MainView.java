@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
@@ -30,8 +31,8 @@ public class MainView extends View {
     private static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
     public final int numCellTypes = 21;//Kind of chess piece
     private final BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
-    public final MainGame game;
-    private final Context mContext;
+    public MainGame game;
+    private Context mContext;
     //Internal variables
     private final Paint paint = new Paint();
     public boolean hasSaveState = false;
@@ -85,7 +86,23 @@ public class MainView extends View {
 
     public MainView(Context context) {
         super(context);
-        mContext = context;
+        this.mContext = context;
+        init();
+    }
+
+    public MainView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        this.mContext = context;
+        init();
+    }
+
+    public MainView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.mContext = context;
+        init();
+    }
+
+    public void init() {
         //Loading resources
         game = new MainGame(mContext, this);
         try {
@@ -114,14 +131,14 @@ public class MainView extends View {
 
         canvas.drawBitmap(background, 0, 0, paint);//draw background
 
-        drawScoreText(canvas);//draw fractions
+//        drawScoreText(canvas);//draw fractions
         if (!game.isActive() && !game.aGrid.isAnimationActive()) {
             drawNewGameButton(canvas, true);
         }
         //AI被开启
-        if (!game.isActive() && !game.aGrid.isAnimationActive()) {
-            drawAiButton(canvas, true);
-        }
+//        if (!game.isActive() && !game.aGrid.isAnimationActive()) {
+//            drawAiButton(canvas, true);
+//        }
         drawCells(canvas);
 
         if (!game.isActive()) {
@@ -146,8 +163,8 @@ public class MainView extends View {
     /** when the screen size changes */
     @Override
     protected void onSizeChanged(int width, int height, int oldW, int oldH) {
-        Log.w("onSizeChanged", width+"x"+height+" "+oldW+"x"+oldH);
         super.onSizeChanged(width, height, oldW, oldH);
+        Log.w("onSizeChanged", width+"x"+height);
         getLayout(width, height);
         createBitmapCells();//Create chess pieces
         createBackgroundBitmap(width, height);
@@ -224,13 +241,13 @@ public class MainView extends View {
     private void createBackgroundBitmap(int width, int height) {
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(background);
-        drawHeader(canvas);
-        drawNewGameButton(canvas, false);
-        drawUndoButton(canvas);
-        drawAiButton(canvas,false);
+//        drawHeader(canvas);
+//        drawNewGameButton(canvas, false);
+//        drawUndoButton(canvas);
+//        drawAiButton(canvas,false);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
-        drawInstructions(canvas);
+//        drawInstructions(canvas);
     }
 
     /** Drawing on a chessboard */
@@ -253,36 +270,28 @@ public class MainView extends View {
     }
 
     /** draw fractions */
-    private void drawScoreText(Canvas canvas) {
-        paint.setTextAlign(Paint.Align.CENTER);
+//    private void drawScoreText(Canvas canvas) {
+//        paint.setTextAlign(Paint.Align.CENTER);
+//
+//        //Outputting high-scores box
+//        backgroundRectangle.setBounds(sXHighScore, sYScoreBox, eXHighScore, eYScoreBox);
+//        backgroundRectangle.draw(canvas);
+//        backgroundRectangle.setBounds(sXScore, sYScoreBox, eXScore, eYScoreBox);
+//        backgroundRectangle.draw(canvas);
+//
+//        paint.setTextSize(titleTextSize);
+//        paint.setColor(ContextCompat.getColor(mContext, R.color.text_brown));
+//        canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, sYTitle, paint);
+//        canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, sYTitle, paint);
+//        paint.setTextSize(bodyTextSize);
+//        paint.setColor(ContextCompat.getColor(mContext, R.color.text_white));
+//        canvas.drawText(String.valueOf(game.highMoveCount), sXHighScore + textMiddleScore, sYMoveCount, paint);
+//        canvas.drawText(String.valueOf(game.moveCount), sXScore + textMiddleScore, sYMoveCount, paint);
+//        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, sYScore, paint);
+//        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, sYScore, paint);
+//        showNowTime(canvas);
+//    }
 
-        //Outputting high-scores box
-        backgroundRectangle.setBounds(sXHighScore, sYScoreBox, eXHighScore, eYScoreBox);
-        backgroundRectangle.draw(canvas);
-        backgroundRectangle.setBounds(sXScore, sYScoreBox, eXScore, eYScoreBox);
-        backgroundRectangle.draw(canvas);
-
-        paint.setTextSize(titleTextSize);
-        paint.setColor(ContextCompat.getColor(mContext, R.color.text_brown));
-        canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, sYTitle, paint);
-        canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, sYTitle, paint);
-        paint.setTextSize(bodyTextSize);
-        paint.setColor(ContextCompat.getColor(mContext, R.color.text_white));
-        canvas.drawText(String.valueOf(game.highMoveCount), sXHighScore + textMiddleScore, sYMoveCount, paint);
-        canvas.drawText(String.valueOf(game.moveCount), sXScore + textMiddleScore, sYMoveCount, paint);
-        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, sYScore, paint);
-        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, sYScore, paint);
-        showNowTime(canvas);
-    }
-
-    void showNowTime(Canvas canvas) {
-        SimpleDateFormat timeStamp = new SimpleDateFormat("HH:mm", Locale.KOREA);
-        String nowTime = timeStamp.format(System.currentTimeMillis());
-        paint.setTextSize(timeTextSize);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setColor(ContextCompat.getColor(mContext, R.color.text_brown));
-        canvas.drawText(nowTime, eXScore, titleStartYAll-160, paint);
-    }
     /* Draw new game button */
     private void drawNewGameButton(Canvas canvas, boolean lightUp) {
 
@@ -373,26 +382,26 @@ public class MainView extends View {
     }
 
     //Drawing game reminders
-    private void drawInstructions(Canvas canvas) {
-        paint.setTextSize(instructionsTextSize);
-        paint.setTextAlign(Paint.Align.LEFT);
-        int textShiftY = centerText() * 2;
-        canvas.drawText(getResources().getString(R.string.instructionsone),
-                startingX, endingY - textShiftY + textPaddingSize, paint);
-
-        paint.setTextSize(instructionsTextSize);
-        paint.setTextAlign(Paint.Align.LEFT);
-        textShiftY = centerText() * 8;
-        canvas.drawText(getResources().getString(R.string.instructionstwo),
-                startingX, endingY - textShiftY + textPaddingSize, paint);
-
-        paint.setTextSize(instructionsTextSize);
-        paint.setTextAlign(Paint.Align.LEFT);
-        textShiftY = centerText() * 14;
-        canvas.drawText(getResources().getString(R.string.instructionsthree),
-                startingX, endingY - textShiftY + textPaddingSize, paint);
-
-    }
+//    private void drawInstructions(Canvas canvas) {
+//        paint.setTextSize(instructionsTextSize);
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        int textShiftY = centerText() * 2;
+////        canvas.drawText(getResources().getString(R.string.instructionsone),
+////                startingX, endingY - textShiftY + textPaddingSize, paint);
+//
+//        paint.setTextSize(instructionsTextSize);
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        textShiftY = centerText() * 8;
+//        canvas.drawText(getResources().getString(R.string.instructionstwo),
+//                startingX, endingY - textShiftY + textPaddingSize, paint);
+//
+//        paint.setTextSize(instructionsTextSize);
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        textShiftY = centerText() * 14;
+//        canvas.drawText(getResources().getString(R.string.instructionsthree),
+//                startingX, endingY - textShiftY + textPaddingSize, paint);
+//
+//    }
 
     //draw checkerboard background color
     private void drawBackground(Canvas canvas) {
@@ -580,14 +589,13 @@ public class MainView extends View {
 
     private void getLayout(int width, int height) {
         //Lattice size
-        cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
+        cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
         //The width of the dividing line, divided into 7 dividing lines from the extra grid
         gridWidth = cellSize / 7;
         //Center coordinates
         int screenMiddleX = width / 2;
-        int screenMiddleY = height / 2;
         //Checkerboard y-axis
-        int boardMiddleY = screenMiddleY + cellSize / 2;
+        int boardMiddleY = height / 2; // + cellSize / 2;
         //Icon size
         iconSize = cellSize / 2;
 
@@ -609,10 +617,10 @@ public class MainView extends View {
         // Game description font size
         paint.setTextAlign(Paint.Align.CENTER);
         //paint.setTextSize(1000);
-        instructionsTextSize = Math.min(
-                1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructionsone)))),
-                textSize / 2.5f
-        );
+//        instructionsTextSize = Math.min(
+//                1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructionsone)))),
+//                textSize / 2.5f
+//        );
         // Game over font size screen adaptation
         gameOverTextSize = Math.min(
                 Math.min(
