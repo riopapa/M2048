@@ -42,7 +42,7 @@ public class MainGame {
     private static final String HIGH_MOVE = "high move";
     private static int endingMaxValue;
     final int numSquaresX = 4;
-    final int numSquaresY = 4;  // @ha
+    final int numSquaresY = 5;  // @ha
     private final Context mContext;
     private final MainView mView;
     public Grid grid = null;
@@ -76,7 +76,7 @@ public class MainGame {
         }
 
         aGrid = new AnimationGrid(numSquaresX, numSquaresY);
-        settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
         editor = settings.edit();
         getHighScore();
         if (score >= highScore) {

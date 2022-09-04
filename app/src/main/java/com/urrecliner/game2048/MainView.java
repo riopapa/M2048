@@ -146,6 +146,7 @@ public class MainView extends View {
     /** when the screen size changes */
     @Override
     protected void onSizeChanged(int width, int height, int oldW, int oldH) {
+        Log.w("onSizeChanged", width+"x"+height+" "+oldW+"x"+oldH);
         super.onSizeChanged(width, height, oldW, oldH);
         getLayout(width, height);
         createBitmapCells();//Create chess pieces
@@ -578,19 +579,19 @@ public class MainView extends View {
     }
 
     private void getLayout(int width, int height) {
-        //格子大小
+        //Lattice size
         cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
         //The width of the dividing line, divided into 7 dividing lines from the extra grid
         gridWidth = cellSize / 7;
-        //中心坐标
+        //Center coordinates
         int screenMiddleX = width / 2;
         int screenMiddleY = height / 2;
-        //棋盘y轴
+        //Checkerboard y-axis
         int boardMiddleY = screenMiddleY + cellSize / 2;
-        //图标大小
+        //Icon size
         iconSize = cellSize / 2;
 
-        //网格尺寸
+        //grid size
         double halfNumSquaresX = game.numSquaresX / 2d;
         double halfNumSquaresY = game.numSquaresY / 2d;
         startingX = (int) (screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
@@ -598,10 +599,10 @@ public class MainView extends View {
         startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2);
         endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2);
 
-        //游戏区长度
+        //length of play area
         float widthWithPadding = endingX - startingX;
 
-        // 字体大小
+        // font size
         paint.setTextSize(cellSize);
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));//字符串宽度
 
