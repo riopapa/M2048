@@ -1,7 +1,29 @@
 package com.urrecliner.game2048;
 
+import static com.urrecliner.game2048.Vars.GAME_ENDLESS;
+import static com.urrecliner.game2048.Vars.GAME_ENDLESS_WON;
+import static com.urrecliner.game2048.Vars.GAME_LOST;
+import static com.urrecliner.game2048.Vars.GAME_NORMAL;
+import static com.urrecliner.game2048.Vars.GAME_WIN;
+import static com.urrecliner.game2048.Vars.aGrid;
+import static com.urrecliner.game2048.Vars.bufferGameState;
+import static com.urrecliner.game2048.Vars.bufferScore;
+import static com.urrecliner.game2048.Vars.canUndo;
+import static com.urrecliner.game2048.Vars.gameState;
+import static com.urrecliner.game2048.Vars.grid;
+import static com.urrecliner.game2048.Vars.highMoves;
+import static com.urrecliner.game2048.Vars.highScore;
+import static com.urrecliner.game2048.Vars.lastGameState;
+import static com.urrecliner.game2048.Vars.lastScore;
+import static com.urrecliner.game2048.Vars.mActivity;
+import static com.urrecliner.game2048.Vars.moves;
+import static com.urrecliner.game2048.Vars.score;
+import static com.urrecliner.game2048.Vars.tvHiMove;
+import static com.urrecliner.game2048.Vars.tvMove;
+import static com.urrecliner.game2048.Vars.tvScore;
+import static com.urrecliner.game2048.Vars.tvTime;
+
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.widget.TextView;
 
 import com.urrecliner.game2048.AI.AlphaBeta;
@@ -32,34 +54,12 @@ public class MainGame {
     //Odd state = game is not active
     //Even state = game is active
     //Win state = active state + 1
-    private static final int GAME_WIN = 1;
-    private static final int GAME_LOST = -1;
-    private static final int GAME_NORMAL = 0;
-    public int gameState = GAME_NORMAL;
-    public int lastGameState = GAME_NORMAL;
-    private int bufferGameState = GAME_NORMAL;
-    private static final int GAME_ENDLESS = 2;
-    private static final int GAME_ENDLESS_WON = 3;
-    private static final String HIGH_SCORE = "high score";
-    private static final String HIGH_MOVE = "high move";
     private static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;  // @ha
     private final Context mContext;
     private final MainView mView;
-    public Grid grid = null;
-    public AnimationGrid aGrid;
-    public boolean canUndo;
 
-    public long score = 0;
-    public int moves = 0;
-    public long highScore = 0;
-    public int highMoves = 0;
-    public long lastScore = 0;
-    private long bufferScore = 0;
-
-    SharedPreferences settings;
-    SharedPreferences.Editor editor;
 
     public AlphaBeta gameAI;
     public MainGame(Context context, MainView view) {
@@ -79,34 +79,27 @@ public class MainGame {
         }
 
         aGrid = new AnimationGrid(numSquaresX, numSquaresY);
-        settings = androidx.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
-        editor = settings.edit();
-        getHighScore();
-        if (score >= highScore) {
-            highScore = score;
-            highMoves = moves;
-            recordHighScore();
-        }
+
         moves = 0;
         score = 0;
         gameState = GAME_NORMAL;
+        showStatics();
         addStartTiles();
         mView.refreshLastTime = true;
         mView.resyncTime();
         mView.invalidate();
-        showStatics();
     }
 
     void showStatics() {
-        TextView tvHiScore = MainActivity.mActivity.findViewById(R.id.highScore);
+        TextView tvHiScore = mActivity.findViewById(R.id.highScore);
         if (tvHiScore != null) {
-            MainActivity.tvHiMove.setText(""+ highMoves);
-            MainActivity.tvMove.setText(""+ moves);
-            MainActivity.tvHiScore.setText(""+highScore);
-            MainActivity.tvScore.setText(""+score);
+            tvHiMove.setText(""+ highMoves);
+            tvMove.setText(""+ moves);
+            tvHiScore.setText(""+highScore);
+            tvScore.setText(""+score);
 
             SimpleDateFormat timeStamp = new SimpleDateFormat("HH:mm", Locale.KOREA);
-            MainActivity.tvTime.setText(timeStamp.format(System.currentTimeMillis()));
+            tvTime.setText(timeStamp.format(System.currentTimeMillis()));
         }
 
     }
@@ -129,18 +122,6 @@ public class MainGame {
         grid.insertTile(tile);
         aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
-    }
-
-    private void recordHighScore() {
-        editor.putInt(HIGH_MOVE, highMoves);
-        editor.putLong(HIGH_SCORE, highScore);
-        editor.commit();
-        showStatics();
-    }
-
-    private void getHighScore() {
-        highMoves = settings.getInt(HIGH_MOVE, 1);
-        highScore = settings.getLong(HIGH_SCORE, -1);
     }
 
     private void prepareTiles() {
@@ -282,7 +263,6 @@ public class MainGame {
         if (score >= highScore) {
             highScore = score;
             highMoves = moves;
-            recordHighScore();
         }
     }
 

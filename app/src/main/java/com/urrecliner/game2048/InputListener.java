@@ -1,5 +1,10 @@
 package com.urrecliner.game2048;
 
+import static com.urrecliner.game2048.Vars.highMoves;
+import static com.urrecliner.game2048.Vars.highScore;
+import static com.urrecliner.game2048.Vars.moves;
+import static com.urrecliner.game2048.Vars.score;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.MotionEvent;
@@ -123,10 +128,10 @@ class InputListener implements View.OnTouchListener {
                 previousDirection = 1;
                 veryLastDirection = 1;
                 //"Menu" inputs
-                mView.game.moves++;
-                if (mView.game.score >= mView.game.highScore) {
-                    mView.game.highScore = mView.game.score;
-                    mView.game.highMoves = mView.game.moves;
+                moves++;
+                if (score >= highScore) {
+                    highScore = score;
+                    highMoves = moves;
                 }
                 if (!hasMoved) {
                     //Push the button
@@ -150,7 +155,7 @@ class InputListener implements View.OnTouchListener {
 //                                    .setPositiveButton(R.string.startai, new DialogInterface.OnClickListener() {
 //                                        @Override
 //                                        public void onClick(DialogInterface dialog, int which) {
-//                                            mView.game.move(mView.game.getAIMove());
+//                                            move(getAIMove());
 //                                        }
 //                                    })
 //                                    .setNegativeButton(R.string.continue_game, null)
@@ -158,7 +163,7 @@ class InputListener implements View.OnTouchListener {
 //                                    .setMessage(R.string.startai_dialog_message)
 //                                    .show();
 //
-//                            mView.game.move(3);
+//                            move(3);
                         } else {
                             //关闭AI
                         }

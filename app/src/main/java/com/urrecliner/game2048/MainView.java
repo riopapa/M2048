@@ -1,5 +1,8 @@
 package com.urrecliner.game2048;
 
+import static com.urrecliner.game2048.Vars.aGrid;
+import static com.urrecliner.game2048.Vars.grid;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -16,11 +19,9 @@ import androidx.core.content.ContextCompat;
 import com.urrecliner.game2048.Animation.AnimationCell;
 import com.urrecliner.game2048.Model.Tile;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
-/** view*/
+/* view */
 //@SuppressWarnings("deprecation")
 public class MainView extends View {
 
@@ -55,9 +56,6 @@ public class MainView extends View {
     //Text
     private float titleTextSize;//title font size
     private float bodyTextSize;//Score column size
-    private float headerTextSize;//title font size
-    private float timeTextSize; // now Time size;
-    private float instructionsTextSize;//Game description font size
     private float gameOverTextSize;//game over font
     private int cellSize = 0;//方块大小
     private float textSize = 0;//字体大小
@@ -77,7 +75,6 @@ public class MainView extends View {
 
     private int sYScoreBox, eYScoreBox;
     private int sYTitle, sYMoveCount, sYScore;
-    private int titleStartYAll;
     int textMiddleHighScore;
     int textMiddleScore;
 
@@ -132,11 +129,11 @@ public class MainView extends View {
         canvas.drawBitmap(background, 0, 0, paint);//draw background
 
 //        drawScoreText(canvas);//draw fractions
-        if (!game.isActive() && !game.aGrid.isAnimationActive()) {
-            drawNewGameButton(canvas, true);
-        }
+//        if (!game.isActive() && !agrid.isAnimationActive()) {
+//            drawNewGameButton(canvas, true);
+//        }
         //AI被开启
-//        if (!game.isActive() && !game.aGrid.isAnimationActive()) {
+//        if (!game.isActive() && !agrid.isAnimationActive()) {
 //            drawAiButton(canvas, true);
 //        }
         drawCells(canvas);
@@ -150,8 +147,9 @@ public class MainView extends View {
         }
 
         //Animation drawing If there is still animation, continue to draw
-        if (game.aGrid.isAnimationActive()) {
-            invalidate(startingX, startingY, endingX, endingY);
+        if (aGrid.isAnimationActive()) {
+//            invalidate(startingX, startingY, endingX, endingY);
+            invalidate();
             tick();
 //            Refresh one last time on game end.
         } else if (!game.isActive() && refreshLastTime) {
@@ -241,13 +239,8 @@ public class MainView extends View {
     private void createBackgroundBitmap(int width, int height) {
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(background);
-//        drawHeader(canvas);
-//        drawNewGameButton(canvas, false);
-//        drawUndoButton(canvas);
-//        drawAiButton(canvas,false);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
-//        drawInstructions(canvas);
     }
 
     /** Drawing on a chessboard */
@@ -268,29 +261,6 @@ public class MainView extends View {
         }
         canvas.drawText("" + value, cellSize / 2f, cellSize / 2f - textShiftY, paint);//draw numbers in the center
     }
-
-    /** draw fractions */
-//    private void drawScoreText(Canvas canvas) {
-//        paint.setTextAlign(Paint.Align.CENTER);
-//
-//        //Outputting high-scores box
-//        backgroundRectangle.setBounds(sXHighScore, sYScoreBox, eXHighScore, eYScoreBox);
-//        backgroundRectangle.draw(canvas);
-//        backgroundRectangle.setBounds(sXScore, sYScoreBox, eXScore, eYScoreBox);
-//        backgroundRectangle.draw(canvas);
-//
-//        paint.setTextSize(titleTextSize);
-//        paint.setColor(ContextCompat.getColor(mContext, R.color.text_brown));
-//        canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, sYTitle, paint);
-//        canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, sYTitle, paint);
-//        paint.setTextSize(bodyTextSize);
-//        paint.setColor(ContextCompat.getColor(mContext, R.color.text_white));
-//        canvas.drawText(String.valueOf(game.highMoveCount), sXHighScore + textMiddleScore, sYMoveCount, paint);
-//        canvas.drawText(String.valueOf(game.moveCount), sXScore + textMiddleScore, sYMoveCount, paint);
-//        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, sYScore, paint);
-//        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, sYScore, paint);
-//        showNowTime(canvas);
-//    }
 
     /* Draw new game button */
     private void drawNewGameButton(Canvas canvas, boolean lightUp) {
@@ -343,66 +313,6 @@ public class MainView extends View {
         );
     }
 
-    private void drawAiButton(Canvas canvas,boolean lightUp){
-        /* draw background */
-        if (lightUp) {
-            /* flag bit unavailable */
-            drawDrawable(canvas,
-                    lightUpRectangle,
-                    sXAI,
-                    sYIcons,
-                    sXAI + iconSize,
-                    sYIcons + iconSize
-            );
-        } else {
-            drawDrawable(canvas,
-                    backgroundRectangle,
-                    sXAI,
-                    sYIcons, sXAI + iconSize,
-                    sYIcons + iconSize
-            );
-        }
-
-        drawDrawable(canvas,
-                ContextCompat.getDrawable(mContext, R.drawable.ic_action_ai),
-                sXAI + iconPaddingSize,
-                sYIcons + iconPaddingSize,
-                sXAI + iconSize - iconPaddingSize,
-                sYIcons + iconSize - iconPaddingSize
-        );
-    }
-    //draw the title
-    private void drawHeader(Canvas canvas) {
-        paint.setTextSize(headerTextSize);
-        paint.setColor(ContextCompat.getColor(mContext, R.color.text_black));
-        paint.setTextAlign(Paint.Align.LEFT);
-        int textShiftY = centerText() * 2;
-        int headerStartY = sYScoreBox - textShiftY;
-        canvas.drawText(getResources().getString(R.string.header), startingX, headerStartY, paint);
-    }
-
-    //Drawing game reminders
-//    private void drawInstructions(Canvas canvas) {
-//        paint.setTextSize(instructionsTextSize);
-//        paint.setTextAlign(Paint.Align.LEFT);
-//        int textShiftY = centerText() * 2;
-////        canvas.drawText(getResources().getString(R.string.instructionsone),
-////                startingX, endingY - textShiftY + textPaddingSize, paint);
-//
-//        paint.setTextSize(instructionsTextSize);
-//        paint.setTextAlign(Paint.Align.LEFT);
-//        textShiftY = centerText() * 8;
-//        canvas.drawText(getResources().getString(R.string.instructionstwo),
-//                startingX, endingY - textShiftY + textPaddingSize, paint);
-//
-//        paint.setTextSize(instructionsTextSize);
-//        paint.setTextAlign(Paint.Align.LEFT);
-//        textShiftY = centerText() * 14;
-//        canvas.drawText(getResources().getString(R.string.instructionsthree),
-//                startingX, endingY - textShiftY + textPaddingSize, paint);
-//
-//    }
-
     //draw checkerboard background color
     private void drawBackground(Canvas canvas) {
         drawDrawable(canvas, backgroundRectangle, startingX, startingY, endingX, endingY);
@@ -435,13 +345,13 @@ public class MainView extends View {
                 int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
                 int eY = sY + cellSize;
 
-                Tile currentTile = game.grid.getCellContent(xx, yy);
+                Tile currentTile = grid.getCellContent(xx, yy);
                 if (currentTile != null) {
                     //Get and represent the value of the tile
                     int value = currentTile.getValue();
                     int index = log2(value);
                     //Check for any active animations
-                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
+                    ArrayList<AnimationCell> aArray = aGrid.getAnimationCell(xx, yy);
                     boolean animated = false;
                     for (int i = aArray.size() - 1; i >= 0; i--) {
                         AnimationCell aCell = aArray.get(i);
@@ -505,7 +415,7 @@ public class MainView extends View {
     }
 
     private void checkLeftSame(Canvas canvas, int xx, int yy, int value) {
-        Tile nextTile = game.grid.getCellContent(xx-1, yy);
+        Tile nextTile = grid.getCellContent(xx-1, yy);
         if (nextTile != null) {
             if (value == nextTile.getValue()) {
                 drawConnection(canvas, xx, yy, value, true);
@@ -514,7 +424,7 @@ public class MainView extends View {
     }
 
     private void checkUpSame(Canvas canvas, int xx, int yy, int value) {
-        Tile nextTile = game.grid.getCellContent(xx, yy-1);
+        Tile nextTile = grid.getCellContent(xx, yy-1);
         if (nextTile != null) {
             if (value == nextTile.getValue()) {
                 drawConnection(canvas, xx, yy, value, false);
@@ -556,7 +466,7 @@ public class MainView extends View {
     private void drawEndGameState(Canvas canvas) {
         double alphaChange = 1;
         continueButtonEnabled = false;
-        for (AnimationCell animation : game.aGrid.globalAnimation) {
+        for (AnimationCell animation : aGrid.globalAnimation) {
             if (animation.getAnimationType() == MainGame.FADE_GLOBAL_ANIMATION) {
                 alphaChange = animation.getPercentageDone();
             }
@@ -635,8 +545,6 @@ public class MainView extends View {
         cellTextSize = textSize;
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
-        headerTextSize = textSize * 2;
-        timeTextSize = (int) (bodyTextSize+bodyTextSize/3);
 
         //Fractional area size
         textPaddingSize = (int) (textSize / 3);
@@ -667,7 +575,7 @@ public class MainView extends View {
         eXScore = sXHighScore - textPaddingSize;
         sXScore = eXScore - bodyWidthHighScore;
 
-        titleStartYAll = (int) (sYScoreBox + textPaddingSize + titleTextSize / 2 - textShiftYAll); //Fractional area y-axis
+//        titleStartYAll = (int) (sYScoreBox + textPaddingSize + titleTextSize / 2 - textShiftYAll); //Fractional area y-axis
         paint.setTextSize(bodyTextSize);
 
         sYIcons = (startingY + eYScoreBox) / 2 - iconSize / 2;
@@ -699,7 +607,7 @@ public class MainView extends View {
 
     private void tick() {
         long currentTime = System.nanoTime();
-        game.aGrid.tickAll(currentTime - lastFPSTime);
+        aGrid.tickAll(currentTime - lastFPSTime);
         lastFPSTime = currentTime;
     }
 
