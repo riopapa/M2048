@@ -19,12 +19,12 @@ public class AlphaBeta {
      *
      * Thus, the value is 0 if there is no move, and otherwise equals a value that can easily be
      * xor'ed into the current board state to update the board. */
-    public static int row_left_table [];
-    public static int row_right_table[];
-    public static long col_up_table[];
-    public static long col_down_table[];
-    public static float heur_score_table[];
-    public static float score_table[];
+    public static int [] row_left_table;
+    public static int [] row_right_table;
+    public static long [] col_up_table;
+    public static long [] col_down_table;
+    public static float [] heur_score_table;
+    public static float [] score_table;
 
 
     // 得分
@@ -71,7 +71,7 @@ public class AlphaBeta {
         score_table = new float[65536];
 
         for (int row = 0; row < 65536; ++row) {
-            int line[] = {
+            int []line = {
                     (row >> 0) & 0xf,
                     (row >> 4) & 0xf,
                     (row >> 8) & 0xf,
@@ -269,8 +269,8 @@ public class AlphaBeta {
         //
         Log.e("message",String.format("Move %s: result %s: eval'd %s moves (%s cache hits, %s cache size) in %.3f seconds (maxdepth=%s)\n",move,res,
                 state.moves_evaled,state.cachehits, (int)state.trans_table.size(), elapsed, state.maxdepth));
-        System.out.println(String.format("Move %s: result %s: eval'd %s moves (%s cache hits, %s cache size) in %.3f seconds (maxdepth=%s)\n",move,res,
-                state.moves_evaled,state.cachehits, (int)state.trans_table.size(), elapsed, state.maxdepth));
+//        System.out.println(String.format("Move %s: result %s: eval'd %s moves (%s cache hits, %s cache size) in %.3f seconds (maxdepth=%s)\n",move,res,
+//                state.moves_evaled,state.cachehits, (int)state.trans_table.size(), elapsed, state.maxdepth));
         return res;
     }
 

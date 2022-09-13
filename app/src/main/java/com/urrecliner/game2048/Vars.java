@@ -8,8 +8,6 @@ import com.urrecliner.game2048.Animation.AnimationGrid;
 import com.urrecliner.game2048.Model.Grid;
 
 public class Vars {
-    static final String WIDTH = "width";
-    static final String HEIGHT = "height";
     static final String SCORE = "score";
     static final String HIGH_SCORE = "high score";
     static final String MOVE = "move";

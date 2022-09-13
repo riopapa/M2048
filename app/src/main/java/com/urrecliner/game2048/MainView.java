@@ -22,7 +22,7 @@ import com.urrecliner.game2048.Model.Tile;
 import java.util.ArrayList;
 
 /* view */
-//@SuppressWarnings("deprecation")
+@SuppressWarnings("deprecation")
 public class MainView extends View {
 
     //Internal Constants
@@ -33,7 +33,7 @@ public class MainView extends View {
     public final int numCellTypes = 21;//Kind of chess piece
     private final BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
     public MainGame game;
-    private Context mContext;
+    private final Context mContext;
     //Internal variables
     private final Paint paint = new Paint();
     public boolean hasSaveState = false;
@@ -53,8 +53,6 @@ public class MainView extends View {
     boolean refreshLastTime = true;
     //Timing
     private long lastFPSTime = System.nanoTime();
-    //Text
-    private float titleTextSize;//title font size
     private float bodyTextSize;//Score column size
     private float gameOverTextSize;//game over font
     private int cellSize = 0;//方块大小
@@ -73,8 +71,6 @@ public class MainView extends View {
     private BitmapDrawable winGameFinalOverlay;
     //Score Text variables
 
-    private int sYScoreBox, eYScoreBox;
-    private int sYTitle, sYMoveCount, sYScore;
     int textMiddleHighScore;
     int textMiddleScore;
 
@@ -101,7 +97,7 @@ public class MainView extends View {
 
     public void init() {
         //Loading resources
-        game = new MainGame(mContext, this);
+        game = new MainGame(this);
         try {
             //Getting assets
             backgroundRectangle = ContextCompat.getDrawable(mContext, R.drawable.background_rectangle);
@@ -142,9 +138,9 @@ public class MainView extends View {
             drawEndGameState(canvas);
         }
 
-        if (!game.canContinue()) {
-            drawEndlessText(canvas);
-        }
+//        if (!game.canContinue()) {
+//            drawEndlessText(canvas);
+//        }
 
         //Animation drawing If there is still animation, continue to draw
         if (aGrid.isAnimationActive()) {
@@ -490,16 +486,16 @@ public class MainView extends View {
         }
     }
 
-    private void drawEndlessText(Canvas canvas) {
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setTextSize(bodyTextSize);
-        paint.setColor(ContextCompat.getColor(mContext, R.color.text_black));
-        canvas.drawText(getResources().getString(R.string.endless), startingX, sYIcons - centerText() * 2, paint);
-    }
-
+//    private void drawEndlessText(Canvas canvas) {
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        paint.setTextSize(bodyTextSize);
+//        paint.setColor(ContextCompat.getColor(mContext, R.color.text_black));
+//        canvas.drawText(getResources().getString(R.string.endless), startingX, sYIcons - centerText() * 2, paint);
+//    }
+//
     private void getLayout(int width, int height) {
         //Lattice size
-        cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
+        cellSize = Math.min(width / (game.numSquaresX + 2), height / (game.numSquaresY + 2));
         //The width of the dividing line, divided into 7 dividing lines from the extra grid
         gridWidth = cellSize / 7;
         //Center coordinates
@@ -543,7 +539,9 @@ public class MainView extends View {
 
         paint.setTextSize(cellSize);
         cellTextSize = textSize;
-        titleTextSize = textSize / 3;
+        //Text
+        //title font size
+        float titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
 
         //Fractional area size
@@ -556,11 +554,11 @@ public class MainView extends View {
         int textShiftYAll = centerText();
         int textHeight = (int) titleTextSize;
         //static variables
-        sYScoreBox = (int) (startingY - cellSize * 2f);
-        sYTitle = sYScoreBox + textHeight + textPaddingSize / 2;
-        sYMoveCount = sYTitle + textHeight + textPaddingSize;
-        sYScore = sYMoveCount + textHeight + textPaddingSize;
-        eYScoreBox = sYScore + textPaddingSize;
+        int sYScoreBox = (int) (startingY - cellSize * 2f);
+        int sYTitle = sYScoreBox + textHeight + textPaddingSize / 2;
+        int sYMoveCount = sYTitle + textHeight + textPaddingSize;
+        int sYScore = sYMoveCount + textHeight + textPaddingSize;
+        int eYScoreBox = sYScore + textPaddingSize;
 
         paint.setTextSize(bodyTextSize);
 //        paint.setTextAlign(Paint.Align.CENTER);

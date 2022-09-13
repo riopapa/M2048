@@ -6,14 +6,11 @@ import static com.urrecliner.game2048.Vars.moves;
 import static com.urrecliner.game2048.Vars.score;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /** controller*/
@@ -89,24 +86,26 @@ class InputListener implements View.OnTouchListener {
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !hasMoved) {
                         boolean moved = false;
                         //Vertical
-                        if (((dy >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
+                        boolean b = Math.abs(dy) >= Math.abs(dx);
+                        if (((dy >= SWIPE_THRESHOLD_VELOCITY && b) || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 2;
                             veryLastDirection = 2;
                             mView.game.move(1);
-                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY <= -MOVE_THRESHOLD) && previousDirection % 3 != 0) {
+                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && b) || y - startingY <= -MOVE_THRESHOLD) && previousDirection % 3 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 3;
                             veryLastDirection = 3;
                             mView.game.move(0);
                         }
                         //Horizontal
-                        if (((dx >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dx) >= Math.abs(dy)) || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
+                        final boolean b1 = Math.abs(dx) >= Math.abs(dy);
+                        if (((dx >= SWIPE_THRESHOLD_VELOCITY && b1) || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 5;
                             veryLastDirection = 5;
                             mView.game.move(3);
-                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dx) >= Math.abs(dy)) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
+                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY && b1) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 7;
                             veryLastDirection = 7;
@@ -138,19 +137,9 @@ class InputListener implements View.OnTouchListener {
                     //The game is not over and the AI is not turned on
                     if(iconPressed(mView.sXAI,mView.sYIcons)) {
                         if (!mView.game.gameLost()) {
-                            Observable.create(new Observable.OnSubscribe<Object>() {
-                                @Override
-                                public void call(Subscriber<? super Object> subscriber) {
-                                    subscriber.onNext(mView.game.getAIMove());
-                                }
-                            }).subscribeOn(Schedulers.newThread())
+                            Observable.create(subscriber -> subscriber.onNext(mView.game.getAIMove())).subscribeOn(Schedulers.newThread())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Action1<Object>() {
-                                        @Override
-                                        public void call(Object move) {
-                                            mView.game.move((int) move);
-                                        }
-                                    });
+                                    .subscribe(move -> mView.game.move((int) move));
 //                            new AlertDialog.Builder(mView.getContext())
 //                                    .setPositiveButton(R.string.startai, new DialogInterface.OnClickListener() {
 //                                        @Override
@@ -164,19 +153,12 @@ class InputListener implements View.OnTouchListener {
 //                                    .show();
 //
 //                            move(3);
-                        } else {
-                            //关闭AI
                         }
                     }
                     if (iconPressed(mView.sXNewGame, mView.sYIcons)) {
                         if (!mView.game.gameLost()) {
                             new AlertDialog.Builder(mView.getContext())
-                                    .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            mView.game.newGame();
-                                        }
-                                    })
+                                    .setPositiveButton(R.string.reset, (dialog, which) -> mView.game.newGame())
                                     .setNegativeButton(R.string.continue_game, null)
                                     .setTitle(R.string.reset_dialog_title)
                                     .setMessage(R.string.reset_dialog_message)

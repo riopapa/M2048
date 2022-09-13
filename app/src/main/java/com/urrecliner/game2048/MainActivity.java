@@ -1,7 +1,6 @@
 package com.urrecliner.game2048;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.urrecliner.game2048.Model.Tile;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -46,9 +44,6 @@ import static com.urrecliner.game2048.Vars.tvTime;
 import static com.urrecliner.game2048.Vars.settings;
 import static com.urrecliner.game2048.Vars.editor;
 import static com.urrecliner.game2048.Vars.mainView;
-import static com.urrecliner.game2048.Vars.WIDTH;
-import static com.urrecliner.game2048.Vars.HEIGHT;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,54 +70,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ImageView ivAI = findViewById(R.id.ai);
-        ivAI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Observable.create(new Observable.OnSubscribe<Object>() {
-                        @Override
-                        public void call(Subscriber<? super Object> subscriber) {
-                            subscriber.onNext(mainView.game.getAIMove());
-                        }
-                    }).subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Object>() {
-                        @Override
-                        public void call(Object move) {
-                            mainView.game.move((int) move);
-                        }
-                    });
-        }
-        });
+        ivAI.setOnClickListener(view -> Observable.create(subscriber -> subscriber.onNext(mainView.game.getAIMove())).subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<Object>() {
+                @Override
+                public void call(Object move) {
+                    mainView.game.move((int) move);
+                }
+            }));
 
         ImageView ivNew = findViewById(R.id.new_game);
-        ivNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mainView.game.gameLost()) {
-                    new AlertDialog.Builder(mainView.getContext())
-                            .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mainView.game.newGame();
-                                }
-                            })
-                            .setNegativeButton(R.string.continue_game, null)
-                            .setTitle(R.string.reset_dialog_title)
-                            .setMessage(R.string.reset_dialog_message)
-                            .show();
-                } else {
-                    mainView.game.newGame();
-                }
+        ivNew.setOnClickListener(view -> {
+            if (!mainView.game.gameLost()) {
+                new AlertDialog.Builder(mainView.getContext())
+                        .setPositiveButton(R.string.reset, (dialog, which) -> mainView.game.newGame())
+                        .setNegativeButton(R.string.continue_game, null)
+                        .setTitle(R.string.reset_dialog_title)
+                        .setMessage(R.string.reset_dialog_message)
+                        .show();
+            } else {
+                mainView.game.newGame();
             }
         });
 
         ImageView ivUndo = findViewById(R.id.un_do);
-        ivUndo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainView.game.revertUndoState();
-            }
-        });
+        ivUndo.setOnClickListener(view -> mainView.game.revertUndoState());
 
 
     }
@@ -171,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
 
         Tile[][] field = grid.field;
         Tile[][] undoField = grid.undoField;
-        editor.putInt(WIDTH, field.length);
-        editor.putInt(HEIGHT, field.length);
+//        editor.putInt(WIDTH, field.length);
+//        editor.putInt(HEIGHT, field.length);
 
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
@@ -190,11 +162,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         editor.putLong(SCORE, score);
-        editor.putLong(HIGH_SCORE, highScore);
+        editor.putLong(HIGH_SCORE+"T", highScore);
         editor.putLong(UNDO_SCORE, lastScore);
         editor.putBoolean(CAN_UNDO, canUndo);
+        editor.putInt(HIGH_MOVE+"T", highMoves);
         editor.putInt(MOVE, moves);
-        editor.putInt(HIGH_MOVE, highMoves);
         editor.putInt(GAME_STATE, gameState);
         editor.putInt(UNDO_GAME_STATE, lastGameState);
         editor.apply();
@@ -228,19 +200,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         score = settings.getLong(SCORE, score);
-        highScore = settings.getLong(HIGH_SCORE, highScore);
+        highScore = settings.getLong(HIGH_SCORE+"T", highScore);
         moves = settings.getInt(MOVE, moves);
-        highMoves = settings.getInt(HIGH_MOVE, highMoves);
+        highMoves = settings.getInt(HIGH_MOVE+"T", highMoves);
         lastScore = settings.getLong(UNDO_SCORE, lastScore);
         canUndo = settings.getBoolean(CAN_UNDO, canUndo);
         gameState = settings.getInt(GAME_STATE, gameState);
         lastGameState = settings.getInt(UNDO_GAME_STATE, lastGameState);
-    }
-
-    private void recordHighScore() {
-        editor.putInt(HIGH_MOVE, moves);
-        editor.putLong(HIGH_SCORE, highScore);
-        editor.apply();
     }
 
 }

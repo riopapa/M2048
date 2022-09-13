@@ -12,8 +12,7 @@ public class AIUtil {
     public static final float CPROB_THRESH_BASE = 0.0001f;
     public static final int CACHE_DEPTH_LIMIT  = 6;
     public static long unpack_col(int row) {
-        long tmp = row;
-        return ((tmp | (tmp << 12L) | (tmp << 24L) | (tmp << 36L)) & COL_MASK)&0xFFFFFFFF;
+        return (((long) row | ((long) row << 12L) | ((long) row << 24L) | ((long) row << 36L)) & COL_MASK);
     }
     public static int reverse_row(int row) {
         return ((row >> 12) | ((row >> 4) & 0x00F0)  | ((row << 4) & 0x0F00) | (row << 12))&0xFFFF;//不越界

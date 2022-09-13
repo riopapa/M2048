@@ -23,15 +23,13 @@ import static com.urrecliner.game2048.Vars.tvMove;
 import static com.urrecliner.game2048.Vars.tvScore;
 import static com.urrecliner.game2048.Vars.tvTime;
 
-import android.content.Context;
-import android.widget.TextView;
-
 import com.urrecliner.game2048.AI.AlphaBeta;
 import com.urrecliner.game2048.Animation.AnimationGrid;
 import com.urrecliner.game2048.Model.Cell;
 import com.urrecliner.game2048.Model.Grid;
 import com.urrecliner.game2048.Model.Tile;
 
+import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,14 +54,11 @@ public class MainGame {
     //Win state = active state + 1
     private static int endingMaxValue;
     final int numSquaresX = 4;
-    final int numSquaresY = 4;  // @ha
-    private final Context mContext;
+    final int numSquaresY = 4;
     private final MainView mView;
 
-
     public AlphaBeta gameAI;
-    public MainGame(Context context, MainView view) {
-        mContext = context;
+    public MainGame(MainView view) {
         mView = view;
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
         gameAI=new AlphaBeta();
